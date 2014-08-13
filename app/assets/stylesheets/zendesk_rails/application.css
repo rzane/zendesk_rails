@@ -1,0 +1,29 @@
+/*
+ *= require_tree .
+ *= require_self
+*/
+
+body {
+  padding-top: 70px;
+}
+
+.comment {
+  font-size: 17.5px;
+}
+
+.comment-body p:last-child,
+.comment-body ul:last-child,
+.comment-body ol:last-child {
+  margin-bottom: 0;
+}
+
+.comment-details {
+  display: block;
+  font-size: 80%;
+  line-height: 1.42857143;
+  color: #777;
+}
+
+.comment-details:before {
+  content: '\2014 \00A0';
+}

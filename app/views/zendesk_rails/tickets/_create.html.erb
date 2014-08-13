@@ -1,0 +1,9 @@
+<h1><%= t 'zendesk.tickets.create.heading' %></h1>
+
+<p class='lead'>
+  <%= t 'zendesk.tickets.create.message', email: @ticket.requester.email %>
+</p>
+
+<p>
+  <%= link_to t('zendesk.tickets.create.view'), ticket_path(@ticket.id), class: 'btn btn-primary btn-lg' %>
+</p>

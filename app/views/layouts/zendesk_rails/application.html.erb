@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Help | <%= ZendeskRails.config.app_name %></title>
+  <%= stylesheet_link_tag    "http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" %>
+  <%= stylesheet_link_tag    "zendesk_rails/application", media: "all" %>
+  <%= javascript_include_tag "zendesk_rails/application" %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+  <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+      <div class="navbar-header">
+        <%= link_to ZendeskRails.config.app_name, root_path, class: 'navbar-brand' %>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" role="main">
+    <% flash.each do |type, message| %>
+      <div class="alert alert-<%= type %> fade in">
+        <button class="close" data-dismiss="alert">×</button>
+        <%= message %>
+      </div>
+    <% end %>
+
+    <%= yield %>
+  </div>
+
+  <%= javascript_include_tag "http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js" %>
+</body>
+</html>

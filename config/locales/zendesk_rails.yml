@@ -1,0 +1,27 @@
+en:
+  zendesk:
+    app_name: Help
+    tickets:
+      jumbotron:
+        callout: Having trouble?
+        body: Our help desk is ready to answer any questions you might have. Create a new ticket to get help.
+        new: New Ticket »
+      list:
+        heading: My Tickets
+        columns:
+          id: '#'
+          subject: Subject
+          priority: Priority
+          last_updated: Last Updated
+      new:
+        sidebar: Just fill out the form, and we'll get back to you as soon as possible.
+      create:
+        heading: Thank you for your submission!
+        message: 'We will contact you shortly at %{email}.'
+        view: View Ticket »
+    comments:
+      details: '%{time} by %{user}'
+      added: Comment successfully submitted.
+      new:
+        placeholder: Enter your reply...
+        submit: Add Comment

@@ -1,0 +1,41 @@
+<div class='page-header'>
+  <h2>
+    <div class="label label-default">#<%= @ticket.id -%></div>
+    <%= truncate @ticket.subject, length: 200 -%>
+  </h2>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="well">
+      <%= form_tag(ticket_path(params[:id]), :method => :put) do %>
+        <div class="form-group">
+          <%= text_area_tag :comment, nil, :rows => 5, class: "form-control", placeholder: t('zendesk.comments.new.placeholder') %>
+        </div>
+        <p><%= submit_tag t('zendesk.comments.new.submit'), class: "btn btn-large btn-primary" %></p>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <% @comments.each do |comment| %>
+      <div class="well comment">
+        <div class="row">
+          <% if photo = comment.author.photo %>
+            <div class="col-xs-2 col-md-1">
+              <%= image_tag photo.content_url, class: 'img-circle img-responsive' %>
+            </div>
+          <% end %>
+          <div class="<%= photo ? 'col-xs-10 col-md-11' : 'col-md-12' %>">
+            <div class="comment-body"><%= raw comment.html_body %></div>
+            <small class="comment-details">
+              <%= t 'zendesk.comments.details', time: format_time(comment.created_at), user: comment.author.name %>
+            </small>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

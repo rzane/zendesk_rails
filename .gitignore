@@ -1,0 +1,4 @@
+.bundle/
+spec/internal/log/
+spec/internal/tmp/
+pkg/

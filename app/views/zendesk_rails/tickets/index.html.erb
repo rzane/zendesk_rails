@@ -1,0 +1,33 @@
+<div class="jumbotron">
+  <h1><%= t 'zendesk.tickets.jumbotron.callout' %></h1>
+  <p><%= t 'zendesk.tickets.jumbotron.body' %></p>
+  <p>
+    <%= link_to t('zendesk.tickets.jumbotron.new'), new_ticket_path, class: "btn btn-primary btn-lg" %>
+  </p>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <h1><%= t 'zendesk.tickets.list.heading' %></h1>
+    <div class="table-responsive">
+      <table class="table table-hover table-striped">
+        <thead>
+          <th><%= t 'zendesk.tickets.list.columns.id' %></th>
+          <th><%= t 'zendesk.tickets.list.columns.subject' %></th>
+          <th><%= t 'zendesk.tickets.list.columns.priority' %></th>
+          <th><%= t 'zendesk.tickets.list.columns.last_updated' %></th>
+        </thead>
+        <tbody>
+          <% @tickets.each do |ticket| %>
+            <tr>
+              <td><%= link_to ticket.id, zendesk_rails.ticket_path(ticket.id) %></td>
+              <td><%= truncate ticket.subject, length: 300 %></td>
+              <td><%= ticket.priority.try(:titleize) %></td>
+              <td><%= format_time(ticket.updated_at || ticket.created_at) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
