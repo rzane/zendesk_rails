@@ -3,53 +3,56 @@ require_dependency 'zendesk_rails/application_controller'
 module ZendeskRails
   class TicketsController < ApplicationController
     def index
-      @tickets = client.search(
-        query: "requester:#{zendesk_user_attribute(:email)}",
-        sort_by: 'created_at',
-        sort_order: 'desc'
-      )
+      @tickets = TicketHandler.search(query: {
+        requester: zendesk_user_attribute(:email)
+      })
     end
 
     def show
-      @ticket = client.requests.find(id: params[:id])
-      @comments = @ticket.comments(
-        sort_by: 'created_at',
-        sort_order: 'desc'
-      )
+      @ticket = TicketHandler.find_request(params[:id])
+      @handler = CommentHandler.new(@ticket)
     end
 
     def new
+      @handler = TicketHandler.new
     end
 
     def create
-      @ticket = create_ticket
+      @handler = TicketHandler.new(ticket_params)
+
+      if @ticket = @handler.create
+        redirect_to ticket_path(@ticket.id), flash: {
+          success: t('zendesk.tickets.create.message')
+        }
+      else
+        render 'new'
+      end
     end
 
     def update
-      @ticket = client.tickets.find(id: params[:id])
-      @ticket.comment = {
-        body: params[:comment],
-        author_id: @ticket.requester_id
-      }
+      @ticket = TicketHandler.find_ticket(params[:id])
+      @handler = CommentHandler.new(@ticket, comment_params)
 
-      redirect_to ticket_path(@ticket.id), flash: { success: t('zendesk.comments.added') }
+      if @handler.save
+        redirect_to ticket_path(@ticket.id), flash: {
+          success: t('zendesk.comments.added')
+        }
+      else
+        render 'show'
+      end
     end
 
     private
 
-    def create_ticket
-      client.tickets.create(
-        subject: params[:subject],
-        comment: { value: params[:body] },
-        requester: {
-          name: zendesk_user_attribute(:name),
-          email: zendesk_user_attribute(:email)
-        }
-      )
+    def comment_params
+      params.require(:ticket).permit(:comment)
     end
 
-    def client
-      ZendeskRails.client
+    def ticket_params
+      params.require(:ticket).permit(:subject, :body).merge(requester: {
+        name: zendesk_user_attribute(:name),
+        email: zendesk_user_attribute(:email)
+      })
     end
   end
 end

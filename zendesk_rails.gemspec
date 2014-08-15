@@ -14,11 +14,15 @@ Gem::Specification.new do |s|
   s.description = 'A Rails engine to add help desk ticketing using the Zendesk API.'
   s.license     = 'MIT'
 
-  s.files = Dir['{app,config,db,lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']
+  s.files = Dir['{app,config,lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']
 
   s.add_dependency 'rails', '>= 4.0'
   s.add_dependency 'zendesk_api'
   s.add_dependency 'jquery-rails'
+
   s.add_development_dependency 'combustion', '~> 0.5.2'
   s.add_development_dependency 'rspec-rails'
+  s.add_development_dependency 'simplecov'
+  s.add_development_dependency 'capybara'
+  s.add_development_dependency 'poltergeist'
 end

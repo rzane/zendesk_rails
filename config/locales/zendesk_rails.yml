@@ -2,6 +2,13 @@ en:
   zendesk:
     app_name: Help
     tickets:
+      status:
+        new: warning
+        open: danger
+        pending: info
+        hold: primary
+        solved: default
+        closed: default
       jumbotron:
         callout: Having trouble?
         body: Our help desk is ready to answer any questions you might have. Create a new ticket to get help.
@@ -11,14 +18,19 @@ en:
         columns:
           id: '#'
           subject: Subject
-          priority: Priority
+          status: Status
           last_updated: Last Updated
       new:
         sidebar: Just fill out the form, and we'll get back to you as soon as possible.
+        subject:
+          label: Subject
+          placeholder: Subject
+        body:
+          label: Describe your issue
+          placeholder: Please describe the issue you're experiencing...
+        submit: Send Your Question
       create:
-        heading: Thank you for your submission!
-        message: 'We will contact you shortly at %{email}.'
-        view: View Ticket »
+        message: Thank you for your submission! You can track the status of your ticket from this page.
     comments:
       details: '%{time} by %{user}'
       added: Comment successfully submitted.

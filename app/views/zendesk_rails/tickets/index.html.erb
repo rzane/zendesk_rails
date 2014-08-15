@@ -14,7 +14,7 @@
         <thead>
           <th><%= t 'zendesk.tickets.list.columns.id' %></th>
           <th><%= t 'zendesk.tickets.list.columns.subject' %></th>
-          <th><%= t 'zendesk.tickets.list.columns.priority' %></th>
+          <th><%= t 'zendesk.tickets.list.columns.status' %></th>
           <th><%= t 'zendesk.tickets.list.columns.last_updated' %></th>
         </thead>
         <tbody>
@@ -22,7 +22,11 @@
             <tr>
               <td><%= link_to ticket.id, zendesk_rails.ticket_path(ticket.id) %></td>
               <td><%= truncate ticket.subject, length: 300 %></td>
-              <td><%= ticket.priority.try(:titleize) %></td>
+              <td>
+                <span class="label label-<%= status_label_class(ticket.status) %>">
+                  <%= ticket.status.titleize %>
+                </span>
+              </td>
               <td><%= format_time(ticket.updated_at || ticket.created_at) %></td>
             </tr>
           <% end %>

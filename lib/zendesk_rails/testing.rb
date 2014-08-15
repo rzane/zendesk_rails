@@ -14,11 +14,11 @@ module ZendeskRails
       end
 
       class << self
-        delegate :each, :map, :collect, :select, :find, :find_all, :map, :reject, to: :all
-
         def all
           (@all ||= []).sort { |a, b| b.created_at <=> a.created_at }
         end
+
+        delegate *Array.instance_methods(false), to: :all
       end
     end
 
@@ -44,7 +44,9 @@ module ZendeskRails
         super(attributes)
       end
 
-      def save; true end
+      def save
+        true
+      end
 
       def requester_id
         @requester_id ||= rand(1..1000)
@@ -59,7 +61,7 @@ module ZendeskRails
 
       def comments(_opts = {})
         list = (@attributes[:comments] + [as_comment]).map { |c| Comment.new(c) }
-        list.sort{ |a,b| b.created_at <=> a.created_at }
+        list.sort { |a, b| b.created_at <=> a.created_at }
       end
 
       def comment=(opts)
@@ -69,36 +71,32 @@ module ZendeskRails
         )
       end
 
-      def self.create(client_or_opts = {}, opts = nil)
-        opts ||= client_or_opts
-        id = (all.map(&:id).max || 0) + 1
-        opts.merge!(id: id, description: opts[:comment][:value])
-        ticket = new opts.slice(:subject, :requester, :description, :id)
-        @all.unshift ticket
-        ticket
-      end
+      class << self
+        def create(client_or_opts = {}, opts = nil)
+          opts ||= client_or_opts
+          id = (all.map(&:id).max || 0) + 1
+          opts.merge!(id: id, description: opts[:comment][:value])
+          ticket = new opts.slice(:subject, :requester, :description, :id)
+          @all.unshift ticket
+          ticket
+        end
 
-      def self.find(opts = {})
-        all.find do |ticket|
-          opts.map do |key, value|
-            ticket.send(key) == value || ticket.send(key).to_s == value
-          end.all?
+        def find(opts = {})
+          all.find do |ticket|
+            opts.map do |key, value|
+              ticket.send(key) == value || ticket.send(key).to_s == value
+            end.all?
+          end
         end
       end
     end
 
     class Client
-      def tickets
+      def tickets(_opts = {})
         Ticket
       end
-
-      def requests
-        tickets
-      end
-
-      def search(_opts = {})
-        tickets
-      end
+      alias_method :requests, :tickets
+      alias_method :search, :tickets
     end
   end
 end

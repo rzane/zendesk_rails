@@ -1,3 +1,3 @@
 # Zendesk Rails
 
-A mountable Rails engine for the Zendesk API with a high level of customizability.
+Zendesk Rails is a mountable engine for end-users to create, track, and comment on tickets. It uses the [Zendesk API Client](https://github.com/zendesk/zendesk_api_client_rb).

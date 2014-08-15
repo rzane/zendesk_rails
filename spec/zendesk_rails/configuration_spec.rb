@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe ZendeskRails::Configuration do
-  describe 'configure' do
+describe ZendeskRails do
+  describe '.configure' do
     let(:url) { 'https://example.zendesk.com/api/v2' }
     let(:username) { 'user@example.com' }
     let(:password) { 'secret' }
@@ -13,11 +13,11 @@ describe ZendeskRails::Configuration do
 
     it 'should set the client from the configure method' do
       ZendeskRails.configure { |c| c.url = url }
-      expect(ZendeskRails.client).to be_a(ZendeskAPI::Client)
+      expect(subject.client).to be_a(ZendeskAPI::Client)
     end
 
     describe 'client configuration' do
-      let(:api_config) { ZendeskRails.client.config }
+      let(:api_config) { subject.client.config }
 
       it 'should set the url' do
         ZendeskRails.configure { |c| c.url = url }

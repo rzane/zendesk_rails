@@ -14,6 +14,16 @@ module ZendeskRails
       :url_based_access_token
     ]
 
+    DEFAULT_SORTING = {
+      sort_by: :created_at,
+      sort_order: :desc
+    }
+
+    DEFAULT_USER_ATTRIBUTES = {
+      name: :name,
+      email: :email
+    }
+
     attr_accessor *CLIENT_OPTIONS
     attr_accessor :layout
     attr_writer :devise_scope
@@ -21,6 +31,8 @@ module ZendeskRails
     attr_writer :time_formatter
     attr_writer :test_mode
     attr_writer :user_attributes
+    attr_writer :ticket_list_options
+    attr_writer :comment_list_options
 
     def devise_scope
       @current_user_method || :user
@@ -39,7 +51,15 @@ module ZendeskRails
     end
 
     def user_attributes
-      (@user_attributes || {}).reverse_merge(name: :name, email: :email)
+      (@user_attributes || {}).reverse_merge(DEFAULT_USER_ATTRIBUTES)
+    end
+
+    def ticket_list_options
+      (@ticket_list_options || {}).reverse_merge(DEFAULT_SORTING)
+    end
+
+    def comment_list_options
+      (@comment_list_options || {}).reverse_merge(DEFAULT_SORTING)
     end
 
     def build_client
