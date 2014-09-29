@@ -1,6 +1,10 @@
 class ZendeskRails::ApplicationController < ApplicationController
   layout :zendesk_layout
-  helper_method :zendesk_current_user, :zendesk_user_signed_in?, :zendesk_user_attribute
+
+  helper_method :zendesk_current_user,
+                :zendesk_user_signed_in?,
+                :zendesk_user_attribute,
+                :zendesk_unauthenticated_redirect_path
 
   def zendesk_current_user
     send "current_#{ZendeskRails.config.devise_scope}"
@@ -12,7 +16,11 @@ class ZendeskRails::ApplicationController < ApplicationController
 
   def zendesk_user_attribute(attribute)
     attr_name = ZendeskRails.config.user_attributes[attribute]
-    zendesk_current_user.send(attr_name)
+    zendesk_current_user.try :send, attr_name
+  end
+
+  def zendesk_unauthenticated_redirect_path
+    main_app.root_path
   end
 
   private

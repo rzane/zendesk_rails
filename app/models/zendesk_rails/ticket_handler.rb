@@ -7,7 +7,7 @@ module ZendeskRails
     extend ActiveModel::Naming
 
     attr_reader :ticket
-    attr_accessor :subject, :body, :requester, :comment
+    attr_accessor :name, :email, :subject, :body, :requester, :comment
 
     validates :subject, :body, :requester, presence: true
     validate :requester_email_presence, :requester_name_presence
@@ -19,11 +19,15 @@ module ZendeskRails
     end
 
     def create
-      @ticket = self.class.client.tickets.create(
+      @ticket = self.class.client.tickets.create(create_params) if valid?
+    end
+
+    def create_params
+      {
         subject: subject,
         comment: { value: body },
         requester: requester
-      ) if valid?
+      }.merge(ZendeskRails.config.ticket_create_params)
     end
 
     def persisted?
@@ -32,13 +36,13 @@ module ZendeskRails
 
     def requester_email_presence
       if requester && requester[:email].blank?
-        errors.add(:requester, "email can't be blank")
+        errors.add(:email, "can't be blank")
       end
     end
 
     def requester_name_presence
       if requester && requester[:name].blank?
-        errors.add(:requester, "name can't be blank")
+        errors.add(:name, "can't be blank")
       end
     end
 

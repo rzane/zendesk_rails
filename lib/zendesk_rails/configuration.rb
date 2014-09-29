@@ -33,6 +33,7 @@ module ZendeskRails
     attr_writer :user_attributes
     attr_writer :ticket_list_options
     attr_writer :comment_list_options
+    attr_writer :ticket_create_params
 
     def devise_scope
       @current_user_method || :user
@@ -52,6 +53,10 @@ module ZendeskRails
 
     def user_attributes
       (@user_attributes || {}).reverse_merge(DEFAULT_USER_ATTRIBUTES)
+    end
+
+    def ticket_create_params
+      @ticket_create_params || {}
     end
 
     def ticket_list_options

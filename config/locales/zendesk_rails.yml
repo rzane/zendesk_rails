@@ -22,6 +22,12 @@ en:
           last_updated: Last Updated
       new:
         sidebar: Just fill out the form, and we'll get back to you as soon as possible.
+        name:
+          label: Name
+          placeholder: Name
+        email:
+          label: Email
+          placeholder: Email
         subject:
           label: Subject
           placeholder: Subject
@@ -30,7 +36,11 @@ en:
           placeholder: Please describe the issue you're experiencing...
         submit: Send Your Question
       create:
-        message: Thank you for your submission! You can track the status of your ticket from this page.
+        unauthenticated:
+          title: Your ticket has been submitted!
+          message: You will receive an email at the provided address shortly.
+        authenticated:
+          message: Thank you for your submission! You can track the status of your ticket from this page.
     comments:
       details: '%{time} by %{user}'
       added: Comment successfully submitted.

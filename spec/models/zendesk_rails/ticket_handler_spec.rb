@@ -59,13 +59,13 @@ describe ZendeskRails::TicketHandler do
     it 'should set error when missing requester email' do
       allow(subject).to receive(:requester).and_return(name: 'Test')
       subject.valid?
-      expect(subject.errors[:requester]).to eq(["email can't be blank"])
+      expect(subject.errors[:email]).to eq(["can't be blank"])
     end
 
     it 'should set error when missing requester name' do
       allow(subject).to receive(:requester).and_return(email: 'test@example.com')
       subject.valid?
-      expect(subject.errors[:requester]).to eq(["name can't be blank"])
+      expect(subject.errors[:name]).to eq(["can't be blank"])
     end
   end
 
@@ -73,6 +73,16 @@ describe ZendeskRails::TicketHandler do
     it 'should call create on the client' do
       expect(ZendeskRails.client).to receive_message_chain(:tickets, :create)
       subject.create
+    end
+
+    it 'should merge ticket_create_params from config' do
+      configure(test_mode: true, ticket_create_params: { group_id: 111111 })
+      expect(subject.create_params).to eq(
+        subject: "Test",
+        comment: { value: "Test" },
+        group_id: 111111,
+        requester: { name: "Test", email: "Test" }
+      )
     end
 
     context 'when valid' do

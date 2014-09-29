@@ -1,0 +1,13 @@
+<div class="text-center">
+  <h3><%= t('zendesk.tickets.create.unauthenticated.title') %></h3>
+
+  <p><%= t('zendesk.tickets.create.unauthenticated.message') %></p>
+
+  <p class="text-muted">You will be redirected in 5 seconds...</p>
+</div>
+
+<script>
+window.setTimeout(function() {
+    window.location.href = "<%= zendesk_unauthenticated_redirect_path %>";
+}, 5000);
+</script>

@@ -8,7 +8,7 @@ describe ZendeskRails::TicketsController do
 
   before do
     configure test_mode: true
-    allow(controller).to receive(:zendesk_current_user).and_return(user)
+    sign_in(user)
   end
 
   describe 'GET index' do
@@ -40,43 +40,80 @@ describe ZendeskRails::TicketsController do
   end
 
   describe 'POST create' do
-    let(:params) { { ticket: { subject: 'Test', body: 'Test' } } }
+    describe 'authenticated' do
+      let(:params) { { 'ticket' => { 'subject' => 'Test', 'body' => 'Test' } } }
 
-    it 'should assign @hander' do
-      post :create, params
-      expect(assigns(:handler)).to be_instance_of(ZendeskRails::TicketHandler)
-    end
-
-    it 'should assign @ticket' do
-      post :create, params
-      expect(assigns(:ticket)).not_to be_nil
-    end
-
-    it 'should pass the params to ticket handler' do
-      attributes = params[:ticket].merge(requester: user.to_h)
-      expect(ZendeskRails::TicketHandler).to receive(:new).with(attributes).and_call_original
-      post :create, params
-    end
-
-    context 'when valid' do
-      it 'should redirect to the new ticket' do
+      it 'should assign @hander' do
         post :create, params
-        expect(response).to redirect_to(action: :show, id: assigns(:ticket).id)
+        expect(assigns(:handler)).to be_instance_of(ZendeskRails::TicketHandler)
       end
 
-      it 'should set the sucess flash' do
+      it 'should assign @ticket' do
         post :create, params
-        expect(flash[:success]).to be_present
+        expect(assigns(:ticket)).not_to be_nil
+      end
+
+      it 'should pass the params to ticket handler' do
+        attributes = params['ticket'].merge(requester: user.to_h)
+        expect(ZendeskRails::TicketHandler).to receive(:new).with(attributes).and_call_original
+        post :create, params
+      end
+
+      context 'when valid' do
+        it 'should redirect to the new ticket' do
+          post :create, params
+          expect(response).to redirect_to(action: :show, id: assigns(:ticket).id)
+        end
+
+        it 'should set the sucess flash' do
+          post :create, params
+          expect(flash[:success]).to be_present
+        end
+      end
+
+      context 'when invalid' do
+        it 'should render the new template' do
+          allow_any_instance_of(ZendeskRails::TicketHandler).to receive(:create).and_return(nil)
+          expect(post(:create, params)).to render_template('zendesk_rails/tickets/new')
+        end
       end
     end
 
-    context 'when invalid' do
-      before do
-        allow_any_instance_of(ZendeskRails::TicketHandler).to receive(:create).and_return(nil)
+    describe 'unauthenticated' do
+      before { sign_out }
+
+      let(:params) do
+        { 'ticket' => { 'subject' => 'Test', 'body' => 'Test', 'name' => 'Test', 'email' => 'Test' } }
       end
 
-      it 'should render the new template' do
-        expect(post(:create, params)).to render_template('zendesk_rails/tickets/new')
+      it 'should assign @hander' do
+        post :create, params
+        expect(assigns(:handler)).to be_instance_of(ZendeskRails::TicketHandler)
+      end
+
+      it 'should assign @ticket' do
+        post :create, params
+        expect(assigns(:ticket)).not_to be_nil
+      end
+
+      it 'should pass the params to ticket handler' do
+        ticket = params['ticket'].except('name', 'email').merge(requester: { name: 'Test', email: 'Test' })
+        expect(ZendeskRails::TicketHandler).to receive(:new).with(ticket).and_call_original
+        post :create, params
+      end
+
+      context 'when valid' do
+        it 'should render the create page' do
+          post :create, params
+          expect(response).to render_template('zendesk_rails/tickets/create')
+        end
+      end
+
+      context 'when invalid' do
+        it 'should render the new template' do
+          allow_any_instance_of(ZendeskRails::TicketHandler).to receive(:create).and_return(nil)
+          expect(post(:create, params)).to render_template('zendesk_rails/tickets/new')
+        end
       end
     end
   end

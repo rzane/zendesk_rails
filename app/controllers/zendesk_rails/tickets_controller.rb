@@ -9,7 +9,7 @@ module ZendeskRails
     end
 
     def show
-      @ticket = TicketHandler.find_request(params[:id])
+      @ticket  = TicketHandler.find_request(params[:id])
       @handler = CommentHandler.new(@ticket)
     end
 
@@ -22,15 +22,15 @@ module ZendeskRails
 
       if @ticket = @handler.create
         redirect_to ticket_path(@ticket.id), flash: {
-          success: t('zendesk.tickets.create.message')
-        }
+          success: t('zendesk.tickets.create.authenticated.message')
+        } if zendesk_user_signed_in?
       else
         render 'new'
       end
     end
 
     def update
-      @ticket = TicketHandler.find_ticket(params[:id])
+      @ticket  = TicketHandler.find_ticket(params[:id])
       @handler = CommentHandler.new(@ticket, comment_params)
 
       if @handler.save
@@ -50,8 +50,8 @@ module ZendeskRails
 
     def ticket_params
       params.require(:ticket).permit(:subject, :body).merge(requester: {
-        name: zendesk_user_attribute(:name),
-        email: zendesk_user_attribute(:email)
+        name: (params[:ticket][:name].presence || zendesk_user_attribute(:name)),
+        email: (params[:ticket][:email].presence || zendesk_user_attribute(:email))
       })
     end
   end
