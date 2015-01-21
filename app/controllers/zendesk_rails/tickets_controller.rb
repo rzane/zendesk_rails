@@ -1,7 +1,7 @@
-require_dependency 'zendesk_rails/application_controller'
-
 module ZendeskRails
   class TicketsController < ApplicationController
+    layout :zendesk_layout
+
     def index
       @tickets = TicketHandler.search(query: {
         requester: zendesk_user_attribute(:email)
@@ -21,11 +21,12 @@ module ZendeskRails
       @handler = TicketHandler.new(ticket_params)
 
       if @ticket = @handler.create
-        redirect_to ticket_path(@ticket.id), flash: {
-          success: t('zendesk.tickets.create.authenticated.message')
-        } if zendesk_user_signed_in?
+        flash_key = zendesk_user_signed_in? ? :authenticated : :unauthenticated
+        redirect_to after_zendesk_ticket_created_path_for(@ticket), flash: {
+          success: t("zendesk.tickets.create.#{flash_key}.message")
+        }
       else
-        render 'new'
+        render *Array(after_zendesk_ticket_invalid_template)
       end
     end
 

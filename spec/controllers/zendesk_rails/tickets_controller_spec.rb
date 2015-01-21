@@ -103,9 +103,9 @@ describe ZendeskRails::TicketsController do
       end
 
       context 'when valid' do
-        it 'should render the create page' do
+        it 'should redirect to the ticket' do
           post :create, params
-          expect(response).to render_template('zendesk_rails/tickets/create')
+          expect(response).to redirect_to(action: :show, id: assigns(:ticket).id)
         end
       end
 

@@ -68,7 +68,7 @@ By default, Zendesk Rails assumes your controller has a `current_user` method. I
 Your user model is expected to have `:name` and `:email` methods. Otherwise, you'll need to provide a hash with the values being the actual names of your methods.
 
 ```ruby
-config.user_attributes = { name: :full_name, email: :email_address } 
+config.user_attributes = { name: :full_name, email: :email_address }
 ```
 
 ##### config.time_formatter
@@ -109,6 +109,28 @@ See http://developer.zendesk.com/documentation/rest_api/requests.html#listing-co
 
 When `config.test_mode` is true, a fake API will be used. All created tickets will be stored in memory. This setting is particularly useful for testing out Zendesk Rails. Do not use this setting in production.
 
-#### Overriding Content
+### Overriding Controller Behavior
+
+Zendesk Rails offers hooks that allow you to control what happens after a ticket is created/invalid. You can override the following methods in your `ApplicationController`.
+
+```ruby
+# The user will be redirected to this URL when a
+# ticket is successfully created
+def after_zendesk_ticket_created_path_for(ticket)
+  if user_signed_in?
+    ticket_path(ticket.id)
+  else
+    main_app.root_path
+  end
+end
+
+# Render will be called with these arguments when a ticket is invalid
+def after_zendesk_ticket_invalid_template
+  return 'new' if user_signed_in?
+  ['welcome/index', { layout: false }]
+end
+```
+
+### Overriding Content
 
 Zendesk Rails allows you to easily override content using I18n. Override keys from [config/locales/zendesk_rails.yml](config/locales/zendesk_rails.yml) in a file located in your `config/locales` directory.
