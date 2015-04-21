@@ -2,7 +2,7 @@ module ZendeskRails
   module Testing
     class Resource
       def initialize(attributes)
-        @attributes = attributes.symbolize_keys
+        @attributes = attributes.with_indifferent_access
       end
 
       def method_missing(method, *args, &block)
@@ -17,8 +17,11 @@ module ZendeskRails
         def all
           (@all ||= []).sort { |a, b| b.created_at <=> a.created_at }
         end
-
         delegate *Array.instance_methods(false), to: :all
+
+        def clear!
+          @all = []
+        end
       end
     end
 

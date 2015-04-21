@@ -1,11 +1,13 @@
 require 'zendesk_rails/engine'
 
 module ZendeskRails
-  mattr_reader :config, :client
+  class << self
+    attr_reader :config
+    delegate :client, to: :config
 
-  def self.configure
-    @@config = ZendeskRails::Configuration.new
-    yield config
-    @@client = config.build_client
+    def configure(&block)
+      @config = Configuration.new(&block)
+      @config.client
+    end
   end
 end

@@ -1,19 +1,5 @@
 module ZendeskRails
   class Configuration
-    CLIENT_OPTIONS = [
-      :username,
-      :password,
-      :token,
-      :url,
-      :retry,
-      :logger,
-      :client_options,
-      :adapter,
-      :allow_http,
-      :access_token,
-      :url_based_access_token
-    ]
-
     DEFAULT_SORTING = {
       sort_by: :created_at,
       sort_order: :desc
@@ -24,7 +10,6 @@ module ZendeskRails
       email: :email
     }
 
-    attr_accessor *CLIENT_OPTIONS
     attr_accessor :layout
     attr_writer :devise_scope
     attr_writer :app_name
@@ -34,6 +19,13 @@ module ZendeskRails
     attr_writer :ticket_list_options
     attr_writer :comment_list_options
     attr_writer :ticket_create_params
+
+    def initialize(&block)
+      @zendesk_api_client = ZendeskAPI::Client.new do |config|
+        @zendesk_api_config = config
+        yield self
+      end
+    end
 
     def devise_scope
       @current_user_method || :user
@@ -67,24 +59,26 @@ module ZendeskRails
       (@comment_list_options || {}).reverse_merge(DEFAULT_SORTING)
     end
 
-    def build_client
-      client_class.new do |client_config|
-        CLIENT_OPTIONS.each do |opt|
-          if value = send(opt)
-            client_config.send("#{opt}=", value)
-          end
+    def client
+      @client ||= begin
+        if test_mode?
+          require 'zendesk_rails/testing'
+          ZendeskRails::Testing::Client.new
+        else
+          @zendesk_api_client
         end
       end
     end
 
-    private
+    def respond_to_missing?(meth, *)
+      @zendesk_api_config.respond_to?(meth) || super
+    end
 
-    def client_class
-      if test_mode?
-        require 'zendesk_rails/testing'
-        ZendeskRails::Testing::Client
+    def method_missing(meth, *args, &block)
+      if @zendesk_api_config.respond_to?(meth)
+        @zendesk_api_config.send(meth, *args, &block)
       else
-        ::ZendeskAPI::Client
+        super
       end
     end
   end

@@ -2,6 +2,7 @@ en:
   zendesk:
     app_name: Help
     tickets:
+      not_found: We were unable to locate the requested ticket.
       status:
         new: warning
         open: danger

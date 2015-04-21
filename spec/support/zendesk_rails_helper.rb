@@ -1,5 +1,7 @@
 module ZendeskRailsHelper
   def configure(opts = {})
+    opts[:url] ||= 'https://example.zendesk.com/api/v2'
+
     ZendeskRails.configure do |config|
       opts.each do |key, value|
         config.send("#{key}=", value) if value

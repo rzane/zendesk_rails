@@ -1,0 +1,25 @@
+<%= form_for(handler, as: :ticket, url: tickets_path) do |f| %>
+  <% unless zendesk_user_signed_in? %>
+    <%= form_group_with_errors f.object, :name do %>
+      <%= f.label :name, t('zendesk.tickets.new.name.label') %>
+      <%= f.text_field :name, class: "form-control", placeholder: t('zendesk.tickets.new.name.placeholder') %>
+    <% end %>
+
+    <%= form_group_with_errors f.object, :email do %>
+      <%= f.label :email, t('zendesk.tickets.new.email.label') %>
+      <%= f.text_field :email, class: "form-control", placeholder: t('zendesk.tickets.new.email.placeholder') %>
+    <% end %>
+  <% end %>
+
+  <%= form_group_with_errors f.object, :subject do %>
+    <%= f.label :subject, t('zendesk.tickets.new.subject.label') %>
+    <%= f.text_field :subject, class: "form-control", placeholder: t('zendesk.tickets.new.subject.placeholder') %>
+  <% end %>
+
+  <%= form_group_with_errors f.object, :body do %>
+    <%= f.label :body, t('zendesk.tickets.new.body.label') %>
+    <%= f.text_area :body, rows: 10, class: "form-control", placeholder: t('zendesk.tickets.new.body.placeholder') %>
+  <% end %>
+
+  <p><%= f.submit t('zendesk.tickets.new.submit'), class: "btn btn-large btn-primary" %></p>
+<% end %>

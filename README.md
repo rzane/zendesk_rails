@@ -111,23 +111,25 @@ When `config.test_mode` is true, a fake API will be used. All created tickets wi
 
 ### Overriding Controller Behavior
 
-Zendesk Rails offers hooks that allow you to control what happens after a ticket is created/invalid. You can override the following methods in your `ApplicationController`.
+Zendesk Rails offers hooks that allow you to control what happens after a ticket is created/updated/invalid. To do that, create `app/controllers/zendesk_rails/tickets_controller.rb`.
 
 ```ruby
-# The user will be redirected to this URL when a
-# ticket is successfully created
-def after_zendesk_ticket_created_path_for(ticket)
-  if user_signed_in?
-    ticket_path(ticket.id)
-  else
-    main_app.root_path
-  end
-end
+module ZendeskRails
+  class TicketsController < ApplicationController
+    private
 
-# Render will be called with these arguments when a ticket is invalid
-def after_zendesk_ticket_invalid_template
-  return 'new' if user_signed_in?
-  ['welcome/index', { layout: false }]
+    def after_created_ticket ticket # When a ticket is created
+      redirect_to ticket_path(ticket.id), flash: { notice: 'Congrats!' }
+    end
+
+    def after_invalid_ticket ticket # When a ticket is invalid
+      render 'new'
+    end
+
+    def after_updated_ticket ticket # When a comment is added
+      redirect_to ticket_path(ticket.id), flash: { notice: 'Cool comment, bro.' }
+    end
+  end
 end
 ```
 

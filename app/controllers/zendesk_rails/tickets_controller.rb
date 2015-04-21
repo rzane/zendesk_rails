@@ -1,43 +1,50 @@
 module ZendeskRails
   class TicketsController < ApplicationController
+    delegate :config, to: :ZendeskRails, prefix: :zendesk
+    delegate :layout, to: :zendesk_config, prefix: :zendesk
+
     layout :zendesk_layout
 
+    helper_method :zendesk_config,
+                  :zendesk_current_user,
+                  :zendesk_user_signed_in?,
+                  :zendesk_user_attribute
+
+    rescue_from Resource::NotFoundException do |ex|
+      redirect_to tickets_path, flash: { alert: t('zendesk.tickets.not_found') }
+    end
+
     def index
-      @tickets = TicketHandler.search(query: {
-        requester: zendesk_user_attribute(:email)
-      })
+      email = zendesk_user_attribute(:email)
+      @tickets = Ticket.belonging_to(email)
     end
 
     def show
-      @ticket  = TicketHandler.find_request(params[:id])
-      @handler = CommentHandler.new(@ticket)
+      @ticket  = Ticket.find_request(params[:id])
+      @comment = Comment.new(@ticket)
+      @comments = @ticket.comments(zendesk_config.comment_list_options)
     end
 
     def new
-      @handler = TicketHandler.new
+      @handler = Ticket.new
     end
 
     def create
-      @handler = TicketHandler.new(ticket_params)
+      @handler = Ticket.new(ticket_params)
 
       if @ticket = @handler.create
-        flash_key = zendesk_user_signed_in? ? :authenticated : :unauthenticated
-        redirect_to after_zendesk_ticket_created_path_for(@ticket), flash: {
-          success: t("zendesk.tickets.create.#{flash_key}.message")
-        }
+        after_created_ticket(@ticket)
       else
-        render *Array(after_zendesk_ticket_invalid_template)
+        after_invalid_ticket(@ticket)
       end
     end
 
     def update
-      @ticket  = TicketHandler.find_ticket(params[:id])
-      @handler = CommentHandler.new(@ticket, comment_params)
+      @ticket  = Ticket.find_ticket(params[:id])
+      @comment = Comment.new(@ticket, comment_params)
 
-      if @handler.save
-        redirect_to ticket_path(@ticket.id), flash: {
-          success: t('zendesk.comments.added')
-        }
+      if @comment.save
+        after_updated_ticket(@ticket)
       else
         render 'show'
       end
@@ -54,6 +61,36 @@ module ZendeskRails
         name: (params[:ticket][:name].presence || zendesk_user_attribute(:name)),
         email: (params[:ticket][:email].presence || zendesk_user_attribute(:email))
       })
+    end
+
+    def zendesk_current_user
+      send "current_#{zendesk_config.devise_scope}"
+    end
+
+    def zendesk_user_signed_in?
+      send "#{zendesk_config.devise_scope}_signed_in?"
+    end
+
+    # Gets the value of a user's name/emails based on
+    # configurable attribute names
+    def zendesk_user_attribute(attribute)
+      attr_name = zendesk_config.user_attributes[attribute]
+      zendesk_current_user.try(attr_name)
+    end
+
+    def after_created_ticket ticket
+      key = zendesk_user_signed_in? ? :authenticated : :unauthenticated
+      message = t "zendesk.tickets.create.#{key}.message"
+      redirect_to ticket_path(ticket.id), flash: { notice: message }
+    end
+
+    def after_updated_ticket ticket
+      message = t 'zendesk.comments.added'
+      redirect_to ticket_path(ticket.id), flash: { notice: message }
+    end
+
+    def after_invalid_ticket ticket
+      render 'new'
     end
   end
 end
