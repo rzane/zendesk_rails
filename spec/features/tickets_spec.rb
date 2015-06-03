@@ -5,25 +5,47 @@ module ZendeskRails
     background { configure test_mode: true }
 
     feature 'new' do
-      background { visit new_ticket_path }
+      shared_examples 'new ticket validation' do
+        scenario 'User creates a new ticket w/ blank subject' do
+          fill_in 'ticket[body]', with: 'Example body'
+          click_button 'Send Your Question'
+          expect(page).to have_content("Subject can't be blank")
+        end
 
-      scenario 'User creates a new ticket' do
-        fill_in 'ticket[subject]', with: 'Example subject'
-        fill_in 'ticket[body]', with: 'Example body'
-        click_button 'Send Your Question'
-        expect(page).to have_content('Thank you for your submission!')
+        scenario 'User creates a new ticket w/ blank body' do
+          fill_in 'ticket[subject]', with: 'Example subject'
+          click_button 'Send Your Question'
+          expect(page).to have_content("Body can't be blank")
+        end
       end
 
-      scenario 'User creates a new ticket w/ blank subject' do
-        fill_in 'ticket[body]', with: 'Example body'
-        click_button 'Send Your Question'
-        expect(page).to have_content("Subject can't be blank")
+      context 'authenticated' do
+        background { visit new_ticket_path }
+
+        scenario 'User creates a new ticket' do
+          fill_in 'ticket[subject]', with: 'Example subject'
+          fill_in 'ticket[body]', with: 'Example body'
+          click_button 'Send Your Question'
+          expect(page).to have_content('Thank you for your submission!')
+        end
+
+        include_examples 'new ticket validation'
       end
 
-      scenario 'User creates a new ticket w/ blank body' do
-        fill_in 'ticket[subject]', with: 'Example subject'
-        click_button 'Send Your Question'
-        expect(page).to have_content("Body can't be blank")
+      context 'unauthenticated' do
+        background { sign_out }
+        background { visit new_ticket_path }
+
+        scenario 'User creates a new ticket' do
+          fill_in 'ticket[name]', with: 'User name'
+          fill_in 'ticket[email]', with: 'user@example.com'
+          fill_in 'ticket[subject]', with: 'Example subject'
+          fill_in 'ticket[body]', with: 'Example body'
+          click_button 'Send Your Question'
+          expect(page).to have_content('Thank you for your submission!')
+        end
+
+        include_examples 'new ticket validation'
       end
     end
 

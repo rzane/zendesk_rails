@@ -24,7 +24,10 @@
             </div>
           <% end %>
           <div class="<%= photo ? 'col-xs-10 col-md-11' : 'col-md-12' %>">
-            <div class="zendesk-comment-body"><%= raw comment.html_body %></div>
+            <div class="zendesk-comment-body">
+              <%= raw comment.html_body %>
+            </div>
+
             <small class="zendesk-comment-details">
               <%= t 'zendesk.comments.details', time: format_time(comment.created_at), user: comment.author.name %>
             </small>

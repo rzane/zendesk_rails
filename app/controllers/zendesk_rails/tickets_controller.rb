@@ -33,9 +33,9 @@ module ZendeskRails
       @handler = Ticket.new(ticket_params)
 
       if @ticket = @handler.create
-        after_created_ticket(@ticket)
+        after_created_ticket @ticket
       else
-        after_invalid_ticket(@ticket)
+        render 'new'
       end
     end
 
@@ -44,7 +44,7 @@ module ZendeskRails
       @comment = Comment.new(@ticket, comment_params)
 
       if @comment.save
-        after_updated_ticket(@ticket)
+        after_updated_ticket @ticket
       else
         render 'show'
       end
@@ -79,18 +79,17 @@ module ZendeskRails
     end
 
     def after_created_ticket ticket
-      key = zendesk_user_signed_in? ? :authenticated : :unauthenticated
-      message = t "zendesk.tickets.create.#{key}.message"
-      redirect_to ticket_path(ticket.id), flash: { notice: message }
+      if zendesk_user_signed_in?
+        message = t "zendesk.tickets.create.authenticated.message"
+        redirect_to ticket_path(ticket.id), flash: { notice: message }
+      else
+        render 'create'
+      end
     end
 
     def after_updated_ticket ticket
       message = t 'zendesk.comments.added'
       redirect_to ticket_path(ticket.id), flash: { notice: message }
-    end
-
-    def after_invalid_ticket ticket
-      render 'new'
     end
   end
 end

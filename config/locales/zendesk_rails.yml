@@ -43,7 +43,7 @@ en:
         authenticated:
           message: Thank you for your submission! You can track the status of your ticket from this page.
         unauthenticated:
-          message: Thank you for your submission! You will receive an email at the provided address shortly.
+          message: Thank you for your submission! You will receive an email at <strong>%{email}</strong> shortly.
     comments:
       details: '%{time} by %{user}'
       added: Comment successfully submitted.

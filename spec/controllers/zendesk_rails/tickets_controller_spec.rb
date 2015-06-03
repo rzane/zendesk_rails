@@ -108,9 +108,9 @@ module ZendeskRails
         end
 
         context 'when valid' do
-          it 'should redirect to the ticket' do
+          it 'should show the ticket' do
             post :create, params
-            expect(response).to redirect_to(action: :show, id: assigns(:ticket).id)
+            expect(response).to render_template 'create'
           end
         end
 

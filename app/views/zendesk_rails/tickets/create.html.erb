@@ -1,0 +1,11 @@
+<div class="alert alert-success">
+  <%= raw t('zendesk.tickets.create.unauthenticated.message', email: @ticket.requester.email) %>
+</div>
+
+<div class="page-header">
+  <h2><%= truncate @ticket.subject, length: 200 -%></h2>
+</div>
+
+<div class="zendesk-comment">
+  <%= @ticket.description %>
+</div>
