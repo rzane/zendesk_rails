@@ -1,6 +1,6 @@
 <div class="jumbotron">
   <h1><%= t 'zendesk.tickets.jumbotron.callout' %></h1>
-  <p><%= t 'zendesk.tickets.jumbotron.body' %></p>
+  <p><%= raw t('zendesk.tickets.jumbotron.body') %></p>
   <p>
     <%= link_to t('zendesk.tickets.jumbotron.new'), new_ticket_path, class: "btn btn-primary btn-lg" %>
   </p>
