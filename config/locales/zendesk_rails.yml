@@ -2,6 +2,9 @@ en:
   zendesk:
     app_name: Help
     tickets:
+      none: |
+        You haven't submitted any tickets, yet. Once you submit a ticket,
+        it will appear here so you can come back to it later.
       not_found: We were unable to locate the requested ticket.
       status:
         new: warning

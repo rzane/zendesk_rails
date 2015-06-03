@@ -3,27 +3,27 @@
  *= require_self
 */
 
-body {
-  padding-top: 70px;
+.zendesk-no-tickets {
+  margin-top: 30px;
 }
 
-.comment {
+.zendesk-comment {
   font-size: 17.5px;
 }
 
-.comment-body p:last-child,
-.comment-body ul:last-child,
-.comment-body ol:last-child {
+.zendesk-comment-body p:last-child,
+.zendesk-comment-body ul:last-child,
+.zendesk-comment-body ol:last-child {
   margin-bottom: 0;
 }
 
-.comment-details {
+.zendesk-comment-details {
   display: block;
   font-size: 80%;
   line-height: 1.42857143;
   color: #777;
 }
 
-.comment-details:before {
+.zendesk-comment-details:before {
   content: '\2014 \00A0';
 }

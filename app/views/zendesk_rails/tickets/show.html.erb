@@ -16,7 +16,7 @@
 <div class="row">
   <div class="col-md-12">
     <% @ticket.comments.each do |comment| %>
-      <div class="well comment">
+      <div class="well zendesk-comment">
         <div class="row">
           <% if photo = comment.author.photo %>
             <div class="col-xs-2 col-md-1">
@@ -24,8 +24,8 @@
             </div>
           <% end %>
           <div class="<%= photo ? 'col-xs-10 col-md-11' : 'col-md-12' %>">
-            <div class="comment-body"><%= raw comment.html_body %></div>
-            <small class="comment-details">
+            <div class="zendesk-comment-body"><%= raw comment.html_body %></div>
+            <small class="zendesk-comment-details">
               <%= t 'zendesk.comments.details', time: format_time(comment.created_at), user: comment.author.name %>
             </small>
           </div>
